@@ -9,9 +9,10 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val binding = ActivityMainBinding.inflate(layoutInflater)
+        this.binding = ActivityMainBinding.inflate(layoutInflater)
         val view = binding.root;
-
         setContentView(view)
+
+        this.binding.txtTime.text = "00:00"
     }
 }
