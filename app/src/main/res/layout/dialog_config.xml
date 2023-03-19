@@ -17,10 +17,11 @@
             android:layout_height="wrap_content"
             app:layout_constraintTop_toTopOf="parent"
             tools:layout_editor_absoluteX="0dp"
-            android:contentDescription="work time"
-            android:layout_margin="18dp"
+            android:layout_marginStart="18dp"
+            android:layout_marginEnd="18dp"
+            android:layout_marginTop="18dp"
             android:inputType="number"
-            android:hint="Tempo de trabalho em minutos"
+            android:hint="@string/text_1_a_60_minutos"
             android:maxLength="2"
             />
 
@@ -31,12 +32,28 @@
             android:layout_height="wrap_content"
             app:layout_constraintTop_toBottomOf="@id/txtWorkTime"
             tools:layout_editor_absoluteX="0dp"
-            android:contentDescription="rest time"
-            android:layout_margin="18dp"
-            android:inputType="number"
-            android:hint="Tempo de descanso em minutos"
+            android:layout_marginStart="18dp"
+            android:layout_marginEnd="18dp"
+            android:layout_marginTop="18dp"            android:inputType="number"
+            android:hint="@string/text_1_a_60_minutos"
             android:maxLength="2"
             />
+
+        <TextView
+            android:id="@+id/labelTempoTrabalho"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/layout_config_tempo_trabalho"
+            app:layout_constraintBottom_toTopOf="@+id/txtWorkTime"
+            app:layout_constraintStart_toStartOf="@+id/txtWorkTime" />
+
+        <TextView
+            android:id="@+id/labelTempoDescanso"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/dialog_config_tempo_descanso"
+            app:layout_constraintBottom_toTopOf="@+id/txtRestTime"
+            app:layout_constraintStart_toStartOf="@+id/txtRestTime" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>
