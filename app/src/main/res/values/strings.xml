@@ -1,8 +1,14 @@
 <resources>
-    <string name="app_name">pomodoro</string>
-    <string name="btn_config_text">Configurações</string>
+    <string name="app_name">Pomodoro Jera</string>
+    <string name="btn_config_text">Settings</string>
     <string name="btn_play_text">Play</string>
     <string name="btn_reset_text">Resetar</string>
-    <string name="tempo_de_trabalho">Tempo de trabalho</string>
-    <string name="tempo_de_descanso">Tempo de descanso</string>
+    <string name="tempo_de_trabalho">Tempo de trabalho restante</string>
+    <string name="tempo_de_descanso">Tempo de descanso restante</string>
+    <string name="btn_pause_text">Pause</string>
+    <string name="texto_quantidade_pomodoros">Quantidade de pomodoros: {qtd_pomodoros}</string>
+    <string name="texto_iniciar_modo_intervalo">Iniciar com modo de intervalo</string>
+    <string name="dialog_config_tempo_descanso">Tempo de descanso</string>
+    <string name="layout_config_tempo_trabalho">Tempo de trabalho</string>
+    <string name="text_1_a_60_minutos">1 a 60 minutos</string>
 </resources>
