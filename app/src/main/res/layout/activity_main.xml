@@ -11,11 +11,12 @@
         android:id="@+id/btnConfig"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="26dp"
-        android:layout_marginEnd="52dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginEnd="40dp"
         android:clickable="true"
         android:contentDescription="@string/btn_config_text"
         android:focusable="true"
+        app:backgroundTint="#FFFFFF"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/ic_btn_config" />
@@ -45,28 +46,30 @@
         android:id="@+id/btnPlay"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="40dp"
         android:clickable="true"
+        android:contentDescription="@string/btn_play_text"
         android:focusable="true"
+        app:backgroundTint="#FFFFFF"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/btnReset"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        android:layout_marginBottom="40dp"
-        android:contentDescription="@string/btn_play_text"
         app:srcCompat="@drawable/ic_btn_play" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/btnReset"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="40dp"
         android:clickable="true"
+        android:contentDescription="@string/btn_reset_text"
         android:focusable="true"
+        app:backgroundTint="#FFFFFF"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/btnPlay"
-        android:layout_marginBottom="40dp"
-        android:contentDescription="@string/btn_reset_text"
         app:srcCompat="@drawable/ic_btn_reset" />
 
     <TextView
@@ -86,5 +89,27 @@
         app:layout_constraintEnd_toEndOf="@+id/btnReset"
         app:layout_constraintStart_toStartOf="@+id/btnReset"
         app:layout_constraintTop_toBottomOf="@+id/btnReset" />
+
+    <TextView
+        android:id="@+id/labelFlow"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/tempo_de_trabalho"
+        app:layout_constraintBottom_toTopOf="@+id/txtTime"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginBottom="16dp"
+        android:textSize="40sp"
+        />
+
+    <com.google.android.material.switchmaterial.SwitchMaterial
+        android:id="@+id/switchMode"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="24dp"
+        android:text="Iniciar com modo de intervalo"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
