@@ -3,4 +3,6 @@
     <string name="btn_config_text">Configurações</string>
     <string name="btn_play_text">Play</string>
     <string name="btn_reset_text">Resetar</string>
+    <string name="tempo_de_trabalho">Tempo de trabalho</string>
+    <string name="tempo_de_descanso">Tempo de descanso</string>
 </resources>
