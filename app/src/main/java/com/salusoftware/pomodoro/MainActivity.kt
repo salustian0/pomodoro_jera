@@ -59,11 +59,10 @@ class MainActivity() : AppCompatActivity() {
             this.timer.cancel()
             this.timerLeft = this.config.workTime
 
-            this.binding.btnPlay.setImageResource(R.drawable.ic_btn_pause)
-            state = "started"
+            this.binding.btnPlay.setImageResource(R.drawable.ic_btn_play)
+            state = "not_started"
 
-            this.timer = createTimer(this.config.workTime)
-            this.timer.start()
+            this.setTimeText(this.config.workTime)
         }
 
         this.binding.btnConfig.setOnClickListener{
@@ -76,7 +75,6 @@ class MainActivity() : AppCompatActivity() {
         return object: CountDownTimer(time, 1){
             override fun onTick(timeInMillis: Long) {
                 context.timerLeft = timeInMillis
-
                 context.setTimeText(timeInMillis)
             }
 
