@@ -1,3 +1,6 @@
 <resources>
     <string name="app_name">pomodoro</string>
+    <string name="btn_config_text">Configurações</string>
+    <string name="btn_play_text">Play</string>
+    <string name="btn_reset_text">Resetar</string>
 </resources>
