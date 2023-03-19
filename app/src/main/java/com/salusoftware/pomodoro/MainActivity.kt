@@ -1,7 +1,11 @@
 package com.salusoftware.pomodoro
 import android.Manifest
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.content.Context
 import android.content.pm.PackageManager
 import android.media.MediaPlayer
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.CountDownTimer
@@ -24,13 +28,16 @@ class MainActivity() : AppCompatActivity() {
     var timerLeft: Long = 0
     var currentFlow: String = "work"
     var state : String =  "not_started"
-    val notification_channel = "channel1"
+    val notification_channel = "channel01"
+    var countPomodoro = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         this.binding = ActivityMainBinding.inflate(layoutInflater)
         val view = binding.root;
         setContentView(view)
+
+        this.binding.labelQtdPomodoro.text = getString(R.string.texto_quantidade_pomodoros).replace("{qtd_pomodoros}", "0")
 
         /**
          * Inicializando objeto e setando valores padrão
@@ -61,6 +68,7 @@ class MainActivity() : AppCompatActivity() {
                     this.binding.labelBtnConfig.visibility = View.GONE
                     this.binding.switchMode.visibility = View.GONE
                     this.binding.btnReset.visibility = View.VISIBLE
+                    this.binding.labelBtnPlay.text = getString(R.string.btn_pause_text)
 
 
                     val time = when(this.currentFlow){"work" -> this.config.workTime else -> this.config.restTime}
@@ -74,6 +82,8 @@ class MainActivity() : AppCompatActivity() {
                 "started" -> {
                     this.timer.cancel()
                     this.binding.btnPlay.setImageResource(R.drawable.ic_btn_play)
+                    this.binding.labelBtnPlay.text = getString(R.string.btn_play_text)
+
                     "paused"
                 }
                 "paused" -> {
@@ -81,6 +91,7 @@ class MainActivity() : AppCompatActivity() {
                     this.timer.start()
 
                     this.binding.btnPlay.setImageResource(R.drawable.ic_btn_pause)
+                    this.binding.labelBtnPlay.text = getString(R.string.btn_pause_text)
                     "started"
                 }
                 else -> "not_started"
@@ -98,6 +109,7 @@ class MainActivity() : AppCompatActivity() {
             this.binding.labelBtnConfig.visibility = View.VISIBLE
             this.binding.switchMode.visibility = View.VISIBLE
             this.binding.btnReset.visibility = View.GONE
+            this.binding.labelBtnPlay.text = getString(R.string.btn_play_text)
 
 
             val time = when(this.currentFlow){"work" -> this.config.workTime else -> this.config.restTime}
@@ -142,17 +154,37 @@ class MainActivity() : AppCompatActivity() {
                         context.setTimeText(context.config.restTime)
                         context.binding.labelFlow.text = getString(R.string.tempo_de_descanso)
                         message = "Tempo de trabalho finalizado!"
+
+                        if(context.binding.switchMode.isChecked){
+                            context.countPomodoro++
+
+                            if(context.countPomodoro == 4){
+                                context.config.restTime = 10
+                            }
+
+                            context.binding.labelQtdPomodoro.text = getString(R.string.texto_quantidade_pomodoros).replace("{qtd_pomodoros}", context.countPomodoro.toString())
+                        }
                         "rest"
                     }
                     else -> {
                         context.setTimeText(context.config.workTime)
                         context.binding.labelFlow.text = getString(R.string.tempo_de_trabalho)
                         message = "Tempo de descanso finalizado!"
+
+                        if(!context.binding.switchMode.isChecked){
+                            context.countPomodoro++
+                            if(context.countPomodoro == 4){
+                                context.config.restTime = 10
+                            }
+                            context.binding.labelQtdPomodoro.text = getString(R.string.texto_quantidade_pomodoros).replace("{qtd_pomodoros}", context.countPomodoro.toString())
+                        }
+
                         "work"
                     }
                 }
 
                 context.binding.btnPlay.setImageResource(R.drawable.ic_btn_play)
+                context.binding.labelBtnPlay.text = getString(R.string.btn_play_text)
 
                 AlertDialog.Builder(context)
                     .setTitle(R.string.btn_config_text)
@@ -185,8 +217,8 @@ class MainActivity() : AppCompatActivity() {
 
     private fun alert(){
         val bindingDialogConfig = DialogConfigBinding.inflate(layoutInflater)
-            bindingDialogConfig.txtWorkTime.setText(this.config.getWorkTimeAsSeconds().toString())
-            bindingDialogConfig.txtRestTime.setText(this.config.getRestTimeAsSeconds().toString())
+        bindingDialogConfig.txtWorkTime.setText(this.config.getWorkTimeAsSeconds().toString())
+        bindingDialogConfig.txtRestTime.setText(this.config.getRestTimeAsSeconds().toString())
 
         AlertDialog.Builder(this)
             .setTitle(R.string.btn_config_text)
@@ -219,15 +251,17 @@ class MainActivity() : AppCompatActivity() {
     }
 
     private fun stopSound(){
-        if(::mp.isInitialized)
+        if(::mp.isInitialized){
             this.mp!!.stop()
             this.mp!!.release()
+        }
     }
 
     /**
      * Envia notificação
      */
     private fun notification(title: String, message: String){
+        this.createNotificationChannel()
         val date = Date()
         val notificationId = SimpleDateFormat("ddHHmmss", Locale.US).format(date).toInt()
 
@@ -254,6 +288,22 @@ class MainActivity() : AppCompatActivity() {
         }
 
         notificationManager.notify(notificationId, builder.build())
+    }
+
+    fun createNotificationChannel() {
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val mChannel = NotificationChannel(
+                this.notification_channel,
+                "General Notifications",
+                NotificationManager.IMPORTANCE_DEFAULT
+            )
+            mChannel.description = "This is default channel used for all other notifications"
+
+            val notificationManager =
+                this.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            notificationManager.createNotificationChannel(mChannel)
+        }
     }
 
 }
