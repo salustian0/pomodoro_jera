@@ -1,9 +1,12 @@
 package com.salusoftware.pomodoro
-
+import android.media.MediaPlayer
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.CountDownTimer
+import android.view.View
+import androidx.appcompat.app.AlertDialog
 import com.salusoftware.pomodoro.databinding.ActivityMainBinding
+import com.salusoftware.pomodoro.databinding.DialogConfigBinding
 import com.salusoftware.pomodoro.models.Config
 import java.util.Calendar
 
@@ -11,7 +14,10 @@ class MainActivity() : AppCompatActivity() {
     lateinit var binding: ActivityMainBinding
     lateinit var config: Config
     lateinit var timer: CountDownTimer
+    lateinit var mp: MediaPlayer
     var timerLeft: Long = 0
+    var currentFlow: String = "work"
+    var state : String =  "not_started"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -19,22 +25,36 @@ class MainActivity() : AppCompatActivity() {
         val view = binding.root;
         setContentView(view)
 
-        this.config = Config()
-        this.timer = this.createTimer(this.config.workTime)
+        /**
+         * Inicializando objeto e setando valores padrão
+         */
+        this.config = Config(
+            workTime = 25,
+            restTime = 5
+        )
 
         setActions()
+
+        this.binding.btnReset.visibility = View.GONE
+
         this.setTimeText(this.config.workTime)
     }
 
 
     private fun setActions(){
-
-        var state = "not_started"
-
         this.binding.btnPlay.setOnClickListener{
-
-            state  = when(state){
+            this.state  = when(this.state){
                 "not_started" -> {
+                    this.binding.btnConfig.visibility = View.GONE
+                    this.binding.labelBtnConfig.visibility = View.GONE
+                    this.binding.switchMode.visibility = View.GONE
+                    this.binding.btnReset.visibility = View.VISIBLE
+
+
+                    val time = when(this.currentFlow){"work" -> this.config.workTime else -> this.config.restTime}
+                    this.timer = this.createTimer(time)
+
+
                     this.timer.start()
                     this.binding.btnPlay.setImageResource(R.drawable.ic_btn_pause)
                     "started"
@@ -51,7 +71,7 @@ class MainActivity() : AppCompatActivity() {
                     this.binding.btnPlay.setImageResource(R.drawable.ic_btn_pause)
                     "started"
                 }
-                else -> ""
+                else -> "not_started"
             }
         }
 
@@ -60,13 +80,33 @@ class MainActivity() : AppCompatActivity() {
             this.timerLeft = this.config.workTime
 
             this.binding.btnPlay.setImageResource(R.drawable.ic_btn_play)
-            state = "not_started"
+            this.state = "not_started"
 
-            this.setTimeText(this.config.workTime)
+            this.binding.btnConfig.visibility = View.VISIBLE
+            this.binding.labelBtnConfig.visibility = View.VISIBLE
+            this.binding.switchMode.visibility = View.VISIBLE
+            this.binding.btnReset.visibility = View.GONE
+
+
+            val time = when(this.currentFlow){"work" -> this.config.workTime else -> this.config.restTime}
+            this.setTimeText(time)
         }
 
         this.binding.btnConfig.setOnClickListener{
+            this.alert()
+        }
 
+        this.binding.switchMode.setOnCheckedChangeListener { compoundButton, isChecked: Boolean ->
+            if(isChecked){
+                this.currentFlow = "rest"
+                this.binding.labelFlow.text = getString(R.string.tempo_de_descanso)
+                this.setTimeText(this.config.restTime)
+
+            }else{
+                this.currentFlow = "work"
+                this.binding.labelFlow.text = getString(R.string.tempo_de_trabalho)
+                this.setTimeText(this.config.workTime)
+            }
         }
     }
 
@@ -79,7 +119,34 @@ class MainActivity() : AppCompatActivity() {
             }
 
             override fun onFinish() {
-               context.setTimeText(context.config.workTime)
+                context.state = "not_started"
+
+                if(currentFlow == "work"){
+                    currentFlow = "rest"
+                    context.setTimeText(context.config.restTime)
+                    context.binding.labelFlow.text = getString(R.string.tempo_de_descanso)
+                }else{
+                    currentFlow = "work"
+                    context.setTimeText(context.config.workTime)
+                    context.binding.labelFlow.text = getString(R.string.tempo_de_trabalho)
+                }
+
+                context.binding.btnPlay.setImageResource(R.drawable.ic_btn_play)
+
+
+                val message = if (context.currentFlow == "work")   "Tempo de descanso finalizado!" else  "Tempo de trabalho finalizado!"
+
+                AlertDialog.Builder(context)
+                    .setTitle(R.string.btn_config_text)
+                    .setTitle("Tempo finalizado")
+                    .setMessage(message)
+                    .setPositiveButton("Ok") { _, _ ->
+                      context.stopSound()
+                    }.setOnDismissListener {
+                        context.stopSound()
+                    }.show()
+
+               context.playSound()
             }
         }
     }
@@ -95,5 +162,47 @@ class MainActivity() : AppCompatActivity() {
         this.binding.txtTime.text = display
     }
 
+    private fun alert(){
+        val bindingDialogConfig = DialogConfigBinding.inflate(layoutInflater)
+            bindingDialogConfig.txtWorkTime.setText(this.config.getWorkTimeAsSeconds().toString())
+            bindingDialogConfig.txtRestTime.setText(this.config.getRestTimeAsSeconds().toString())
+
+        AlertDialog.Builder(this)
+            .setTitle(R.string.btn_config_text)
+            .setView(bindingDialogConfig.root)
+            .setPositiveButton("Salvar") { _, _ ->
+                var workTime = bindingDialogConfig.txtWorkTime.text.toString()
+                var restTime = bindingDialogConfig.txtRestTime.text.toString()
+
+                if(workTime.isBlank()){
+                    workTime = "0"
+                }
+
+                if(restTime.isBlank()){
+                    restTime = "0"
+                }
+
+                this.config.workTime = workTime.toLong()
+                this.config.restTime = restTime.toLong()
+
+
+                val time = when(this.currentFlow){"work" -> this.config.workTime else -> this.config.restTime}
+                this.setTimeText(time)
+
+        }.show()
+    }
+
+    private fun playSound(){
+        if(!::mp.isInitialized){
+            mp = MediaPlayer.create(this@MainActivity, R.raw.alarm)
+            mp!!.isLooping = true
+            mp!!.start()
+        }else mp!!.start()
+    }
+
+    private fun stopSound(){
+        if(::mp.isInitialized)
+            mp!!.stop()
+    }
 
 }
